@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "8f895afd9cd5cccaf411d81db9885945",
+    "content-hash": "6bbe228bb12c541cce08a1e9280863bd",
     "packages": [
         {
             "name": "spatie/data-transfer-object",
@@ -1895,6 +1895,8 @@
     "stability-flags": [],
     "prefer-stable": false,
     "prefer-lowest": false,
-    "platform": [],
+    "platform": {
+        "php": "^7.4"
+    },
     "platform-dev": []
 }

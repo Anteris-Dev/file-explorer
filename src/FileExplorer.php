@@ -6,6 +6,7 @@ use Anteris\FileExplorer\FileObject\Directory;
 use Anteris\FileExplorer\FileObject\File;
 use Anteris\FileExplorer\FileObject\FileObjectCollection;
 use DirectoryIterator;
+use Exception;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 use Symfony\Component\Filesystem\Filesystem;
 
@@ -56,6 +57,24 @@ class FileExplorer
         $this->filesystem->mkdir(
             $this->cleanupDirectorySlashes($directory)
         );
+    }
+
+    /**
+     * Creates a new file. If relative path, this is relative to pointer, otherwise place in absolute path.
+     * 
+     * @author Aidan Casey <aidan.casey@anteris.com>
+     */
+    public function createFile(string $filename, $contents, bool $overwrite = false)
+    {
+        if (! $this->isAbsolutePath($filename)) {
+            $filename = $this->pointer . $filename;
+        }
+
+        if (! $overwrite && $this->exists($filename)) {
+            throw new Exception("$filename already exists: please use overwrite or choose another filename!");
+        }
+
+        file_put_contents($filename, $contents);
     }
 
     /**
@@ -134,13 +153,8 @@ class FileExplorer
             }
         }
 
-        // Sort these files by name
-        usort($items, function ($a, $b) {
-            return ($a->name < $b->name) ? -1 : 1;
-        });
-
         return new FileObjectCollection(
-            $items
+            $this->sortFileObjects($items)
         );
     }
 
@@ -208,5 +222,19 @@ class FileExplorer
     protected function cleanupDirectorySlashes(string $directory): string
     {
         return rtrim(str_replace('\\', '/', $directory), '/') . '/';
+    }
+
+    /**
+     * Sorts file objects alphabetically.
+     * 
+     * @author Aidan Casey <aidan.casey@anteris.com>
+     */
+    protected function sortFileObjects(array $collection): array
+    {
+        usort($collection, function ($a, $b) {
+            return ($a->name < $b->name) ? -1 : 1;
+        });
+
+        return $collection;
     }
 }

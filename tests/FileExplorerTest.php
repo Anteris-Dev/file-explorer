@@ -6,6 +6,7 @@ use Anteris\FileExplorer\FileExplorer;
 use Anteris\FileExplorer\FileObject\Directory;
 use Anteris\FileExplorer\FileObject\File;
 use Anteris\FileExplorer\FileObject\FileObjectCollection;
+use Exception;
 use PHPUnit\Framework\TestCase;
 use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
@@ -40,6 +41,28 @@ class FileExplorerTest extends TestCase
         $this->assertDirectoryDoesNotExist(__DIR__ . '/testdir');
         $this->filesystem->createDirectory('testdir');
         $this->assertDirectoryExists(__DIR__ . '/testdir');
+    }
+
+    /**
+     * @covers \Anteris\FileExplorer\FileExplorer
+     */
+    public function test_it_can_create_a_file()
+    {
+        $this->assertFileDoesNotExist(__DIR__ . '/testfile.txt');
+        $this->filesystem->createFile('testfile.txt', 'hello world!');
+        $this->assertFileExists(__DIR__ . '/testfile.txt');
+        $this->assertEquals('hello world!', file_get_contents(__DIR__ . '/testfile.txt'));
+    }
+
+    /**
+     * @covers \Anteris\FileExplorer\FileExplorer
+     */
+    public function test_it_cannot_create_existing_file()
+    {
+        $this->expectException(Exception::class);
+        $this->expectExceptionMessage(__DIR__ . '/testfile.txt already exists: please use overwrite or choose another filename!');
+        file_put_contents(__DIR__ . '/testfile.txt', 'hello world!');
+        $this->filesystem->createFile('testfile.txt', 'hi there!');
     }
 
     /**
@@ -142,6 +165,10 @@ class FileExplorerTest extends TestCase
     {
         if (is_dir(__DIR__ . '/testdir')) {
             rmdir(__DIR__ . '/testdir');
+        }
+
+        if (file_exists(__DIR__ . '/testfile.txt')) {
+            unlink(__DIR__ . '/testfile.txt');
         }
     }
 }

@@ -17,6 +17,7 @@
     },
     "license": "MIT",
     "require": {
+        "php": "^7.4",
         "spatie/data-transfer-object": "^2.5",
         "symfony/filesystem": "^5.1"
     },
