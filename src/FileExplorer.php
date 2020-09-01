@@ -45,10 +45,10 @@ class FileExplorer
     /**
      * Creates the specified directory (recursively).
      * 
-     * @param  string  $directory  The directory to be creates.
+     * @param  string  $directory  The directory to be created.
      * @see    Filesystem::mkdir()
      */
-    public function createDirectory(string $directory)
+    public function createDirectory(string $directory): void
     {
         if (!$this->isAbsolutePath($directory)) {
             $directory = $this->joinPaths($this->pointer, $directory);
@@ -60,11 +60,24 @@ class FileExplorer
     }
 
     /**
+     * Creates a new directory and sets the current context to that directory.
+     * 
+     * @param  string  $directory  The directory to be created.
+     * 
+     * @author Aidan Casey <aidan.casey@anteris.com>
+     */
+    public function createAndEnterDirectory(string $directory): void
+    {
+        $this->createDirectory($directory);
+        $this->enterDirectory($directory);
+    }
+
+    /**
      * Creates a new file. If relative path, this is relative to pointer, otherwise place in absolute path.
      * 
      * @author Aidan Casey <aidan.casey@anteris.com>
      */
-    public function createFile(string $filename, $contents, bool $overwrite = false)
+    public function createFile(string $filename, $contents, bool $overwrite = false): void
     {
         if (! $this->isAbsolutePath($filename)) {
             $filename = $this->pointer . $filename;
@@ -84,7 +97,7 @@ class FileExplorer
      * 
      * @author Aidan Casey <aidan.casey@anteris.com>
      */
-    public function enterDirectory(string $directory)
+    public function enterDirectory(string $directory): void
     {
         $directory = $this->cleanupDirectorySlashes($directory);
 
@@ -119,7 +132,7 @@ class FileExplorer
      * 
      * @author Aidan Casey <aidan.casey@anteris.com>
      */
-    public function getCurrentDirectory()
+    public function getCurrentDirectory(): string
     {
         return $this->pointer;
     }
@@ -163,7 +176,7 @@ class FileExplorer
      * 
      * @author Aidan Casey <aidan.casey@anteris.com>
      */
-    public function goUp()
+    public function goUp(): void
     {
         $directory = substr(
             $this->pointer,   

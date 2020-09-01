@@ -1,4 +1,4 @@
-# [WIP] Bringing a little class to your filesystem operations
+# Bringing a little class to your filesystem operations
 
 This package seeks to make your filesystem operations easier by bringing in some easy-to-use verbal methods.
 
@@ -39,6 +39,21 @@ Example:
 
 $fileExplorer->createDirectory('./myFolder'); // Creates the folder here
 $fileExplorer->createDirectory('/users/foo/myFolder'); // Creates the folder in /users/foo
+
+```
+
+## createAndEnterDirectory( string $directory )
+Creates a new directory _and_ sets the current context to that directory.
+
+Example:
+
+```php
+
+use Anteris\FileExplorer\FileExplorer;
+
+$fileExplorer = new FileExplorer('/users/foo');
+$fileExplorer->createAndEnterDirectory('testing');
+echo $fileExplorer->getCurrentDirectory(); // Returns '/users/foo/testing/'
 
 ```
 
@@ -112,6 +127,8 @@ Sets the directory context to the parent folder.
 Example:
 
 ```php
+
+use Anteris\FileExplorer\FileExplorer;
 
 $fileExplorer = new FileExplorer('/users/foo');
 $fileExplorer->goUp();
