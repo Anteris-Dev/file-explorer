@@ -12,6 +12,11 @@ use Symfony\Component\Filesystem\Exception\FileNotFoundException;
 
 class FileExplorerTest extends TestCase
 {
+    protected const TEST_FILE           = 'test.txt';
+    protected const TEST_DIRECTORY      = 'testdir';
+    protected const TEST_FILE_PATH      = __DIR__ . '/' . self::TEST_FILE;
+    protected const TEST_DIRECTORY_PATH = __DIR__ . '/' . self::TEST_DIRECTORY . '/';
+
     /** @var FileExplorer An instance of the file explorer. */
     protected FileExplorer $filesystem;
 
@@ -29,8 +34,8 @@ class FileExplorerTest extends TestCase
     public function test_it_throws_error_when_start_directory_does_not_exist()
     {
         $this->expectException(FileNotFoundException::class);
-        $this->expectExceptionMessage(__DIR__ . '/testdir/ does not exist!');
-        new FileExplorer(__DIR__ . '/testdir');
+        $this->expectExceptionMessage(self::TEST_DIRECTORY_PATH . ' does not exist!');
+        new FileExplorer(self::TEST_DIRECTORY_PATH);
     }
 
     /**
@@ -38,9 +43,24 @@ class FileExplorerTest extends TestCase
      */
     public function test_it_can_create_a_directory()
     {
-        $this->assertDirectoryDoesNotExist(__DIR__ . '/testdir');
-        $this->filesystem->createDirectory('testdir');
-        $this->assertDirectoryExists(__DIR__ . '/testdir');
+        $this->assertDirectoryDoesNotExist(self::TEST_DIRECTORY_PATH);
+        $this->filesystem->createDirectory(self::TEST_DIRECTORY);
+        $this->assertDirectoryExists(self::TEST_DIRECTORY_PATH);
+    }
+
+    /**
+     * @covers \Anteris\FileExplorer\FileExplorer
+     */
+    public function test_it_can_create_and_enter_a_directory()
+    {
+        $this->assertDirectoryDoesNotExist(self::TEST_DIRECTORY_PATH);
+        $this->assertNotEquals(self::TEST_DIRECTORY_PATH, $this->filesystem->getCurrentDirectory());
+
+        // Now create and enter the directory
+        $this->filesystem->createAndEnterDirectory(self::TEST_DIRECTORY);
+
+        $this->assertDirectoryExists(self::TEST_DIRECTORY_PATH);
+        $this->assertEquals(self::TEST_DIRECTORY_PATH, $this->filesystem->getCurrentDirectory());
     }
 
     /**
@@ -48,10 +68,10 @@ class FileExplorerTest extends TestCase
      */
     public function test_it_can_create_a_file()
     {
-        $this->assertFileDoesNotExist(__DIR__ . '/testfile.txt');
-        $this->filesystem->createFile('testfile.txt', 'hello world!');
-        $this->assertFileExists(__DIR__ . '/testfile.txt');
-        $this->assertEquals('hello world!', file_get_contents(__DIR__ . '/testfile.txt'));
+        $this->assertFileDoesNotExist(self::TEST_DIRECTORY_PATH);
+        $this->filesystem->createFile(self::TEST_FILE, 'hello world!');
+        $this->assertFileExists(self::TEST_FILE_PATH);
+        $this->assertEquals('hello world!', file_get_contents(self::TEST_FILE_PATH));
     }
 
     /**
@@ -60,9 +80,9 @@ class FileExplorerTest extends TestCase
     public function test_it_cannot_create_existing_file()
     {
         $this->expectException(Exception::class);
-        $this->expectExceptionMessage(__DIR__ . '/testfile.txt already exists: please use overwrite or choose another filename!');
-        file_put_contents(__DIR__ . '/testfile.txt', 'hello world!');
-        $this->filesystem->createFile('testfile.txt', 'hi there!');
+        $this->expectExceptionMessage(self::TEST_FILE_PATH . ' already exists: please use overwrite or choose another filename!');
+        file_put_contents(self::TEST_FILE_PATH, 'hello world!');
+        $this->filesystem->createFile(self::TEST_FILE, 'hi there!');
     }
 
     /**
@@ -71,7 +91,7 @@ class FileExplorerTest extends TestCase
     public function test_it_cannot_enter_a_directory_that_does_not_exist()
     {
         $this->expectException(FileNotFoundException::class);
-        $this->expectExceptionMessage(__DIR__ . '/testdir/ does not exist!');
+        $this->expectExceptionMessage(self::TEST_DIRECTORY_PATH . ' does not exist!');
 
         $this->filesystem->enterDirectory('testdir');
     }
@@ -86,12 +106,12 @@ class FileExplorerTest extends TestCase
             __DIR__ . '/'
         );
 
-        mkdir(__DIR__ . '/testdir');
-        $this->filesystem->enterDirectory('testdir');
+        mkdir(self::TEST_DIRECTORY_PATH);
+        $this->filesystem->enterDirectory(self::TEST_DIRECTORY);
 
         $this->assertEquals(
             $this->filesystem->getCurrentDirectory(),
-            __DIR__ . '/testdir/'
+            self::TEST_DIRECTORY_PATH
         );
     }
 
@@ -100,8 +120,8 @@ class FileExplorerTest extends TestCase
      */
     public function test_it_can_see_if_directory_exists()
     {
-        mkdir(__DIR__ . '/testdir');
-        $this->assertEquals(true, $this->filesystem->exists('testdir'));
+        mkdir(self::TEST_DIRECTORY_PATH);
+        $this->assertEquals(true, $this->filesystem->exists(self::TEST_DIRECTORY));
     }
 
     /**
@@ -109,7 +129,7 @@ class FileExplorerTest extends TestCase
      */
     public function test_it_can_see_if_directory_does_not_exist()
     {
-        $this->assertEquals(false, $this->filesystem->exists('testdir'));
+        $this->assertEquals(false, $this->filesystem->exists(self::TEST_DIRECTORY));
     }
 
     /**
@@ -163,12 +183,12 @@ class FileExplorerTest extends TestCase
      */
     protected function tearDown(): void
     {
-        if (is_dir(__DIR__ . '/testdir')) {
-            rmdir(__DIR__ . '/testdir');
+        if (is_dir(self::TEST_DIRECTORY_PATH)) {
+            rmdir(self::TEST_DIRECTORY_PATH);
         }
 
-        if (file_exists(__DIR__ . '/testfile.txt')) {
-            unlink(__DIR__ . '/testfile.txt');
+        if (file_exists(self::TEST_FILE_PATH)) {
+            unlink(self::TEST_FILE_PATH);
         }
     }
 }
