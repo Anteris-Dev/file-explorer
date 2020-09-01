@@ -8,7 +8,7 @@ Run `composer require anteris/file-explorer:dev-master`
 
 **Requirements**
 - PHP ^7.4 for stricter type casting.
-- [Spatie Data-Transfer-Objects](https://github.com/spatie/data-transfer-objects) for file objects.
+- [Spatie Data-Transfer-Objects](https://github.com/spatie/data-transfer-object) for file objects.
 - [Symfony Filesystem](https://github.com/symfony/filesystem) for their existing easy-to-use functions.
 
 # Getting Started
