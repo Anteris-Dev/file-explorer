@@ -4,7 +4,7 @@ This package seeks to make your filesystem operations easier by bringing in some
 
 ## To Install
 
-Run `composer require anteris/file-explorer:dev-master`
+Run `composer require anteris/file-explorer`
 
 **Requirements**
 - PHP ^7.4 for stricter type casting.
